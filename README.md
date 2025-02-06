@@ -56,7 +56,7 @@ $ yarn install
 
 - For development: `.env.development`
 - For production: `.env.production`
-- For testing: `.env.test`
+- For testing: `.env.testing`
 - Or use a general: `.env`
 
 2. Fill in the file with the corresponding values for each environment
@@ -93,16 +93,16 @@ You can run the project with or without the database depending on your needs:
   docker-compose up backend-dev
   ```
 
-- **To run the database** (without the backend) add the `--profile db` flag:
+- **To run the database** (without the backend):
 
   ```bash
-  docker compose --profile db up template_db
+  docker compose --env-file 'your .env path' up template_db
   ```
 
 - **To run everything together** (both backend and database):
 
   ```bash
-  docker compose up backend-dev template_db
+  docker compose --env-file 'your .env path' up backend-dev template_db
   ```
 
 - **To run everything** (without profiles)
@@ -116,13 +116,13 @@ To choose the environment in which the application will run, use the following c
 
 ```bash
 # Development Mode
-$ NODE_ENV=development docker-compose up
+$ docker-compose --env-file .env.development up
 
 # Production Mode
-$ NODE_ENV=production docker-compose up
+$ docker-compose --env-file .env.production up
 
 # Test Mode
-$ NODE_ENV=test docker-compose up
+$ docker-compose --env-file .env.testing up
 ```
 
 ## Run tests
