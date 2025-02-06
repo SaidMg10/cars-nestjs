@@ -1,6 +1,6 @@
 services:
   template_db:
-    container_name: template_db
+    container_name: cars_db
     image: postgres:16.6
     restart: always
     environment:
