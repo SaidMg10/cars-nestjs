@@ -1,15 +1,9 @@
-const {
-  NODE_ENV: environment = 'development',
-  PORT: port = 3000,
-  HOST_API: hostApi = 'http://localhost:3000/',
-  LOGGER_LEVEL: loggerLevel = 'log',
-  API_VERSION: apiVersion = '0.0.1',
-} = process.env;
+import { registerAs } from '@nestjs/config';
 
-export const AppConfiguration = () => ({
-  environment,
-  port,
-  hostApi,
-  loggerLevel,
-  apiVersion,
-});
+export default registerAs('appConfig', () => ({
+  environment: process.env.NODE_ENV || 'production',
+  port: process.env.PORT || 3000,
+  hostApi: process.env.HOST_API || 'http://localhost:3000/',
+  loggerLevel: process.env.LOGGER_LEVEL || 'log',
+  apiVersion: process.env.API_VERSION || '0.0.1',
+}));

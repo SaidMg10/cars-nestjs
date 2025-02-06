@@ -8,9 +8,8 @@ async function bootstrap() {
   //TODO: app.setGlobalPrefix(''); Add a prefix if you want
   //TODO: app.useGlobalPipes(); Add global pipes if you want
   const configService = app.get(ConfigService);
-  const port = configService.get<string>('PORT', '3000');
+  const port = configService.get<string>('app.port', '3000');
   // TODO: app.enableCors(); Add CORS support if you want
-
   await app.listen(port, '0.0.0.0');
 
   const logger = app.get(Logger);
