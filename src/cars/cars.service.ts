@@ -74,7 +74,16 @@ export class CarsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} car`;
+  async remove(id: string) {
+    const car = await this.findOne(id);
+    try {
+      await this.carRepository.remove(car);
+      return `Car with ID ${id} was removed`;
+    } catch (error) {
+      this.logger.log(error);
+      throw new InternalServerErrorException(
+        'An internal error ocurred while removing the car',
+      );
+    }
   }
 }
