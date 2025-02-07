@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -49,4 +50,12 @@ export class Car {
   //   Images: string[];
 
   //TODO: BeforeInsert && BeforeUpdate
+
+  @BeforeInsert()
+  checkSlugInsert() {
+    this.slug = this.slug
+      .toLowerCase()
+      .replaceAll(' ', '_')
+      .replaceAll("'", '');
+  }
 }
