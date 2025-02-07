@@ -1,0 +1,12 @@
+POST http://localhost:3000/cars
+Content-Type: application/json
+
+{
+    "model": "March",
+    "price": 35000,
+    "version": "Deluxe",
+    "manufacturingYear": 2018,
+    "mileage": 30000,
+    "transmissionType": 2,
+    "description": "March de prueba para el testing"
+}
