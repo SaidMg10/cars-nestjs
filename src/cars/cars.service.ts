@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -23,7 +24,7 @@ export class CarsService {
   ) {
     this.logger = new Logger(CarsService.name);
   }
-  async create(createCarDto: CreateCarDto) {
+  async create(createCarDto: CreateCarDto): Promise<Car> {
     //TODO:Agregar las respectivas relaciones
     const { model, version } = createCarDto;
 
@@ -44,12 +45,17 @@ export class CarsService {
     }
   }
 
-  findAll() {
-    return `This action returns all cars`;
+  async findAll(): Promise<Car[]> {
+    const cars = await this.carRepository.find();
+    if (cars.length === 0)
+      throw new BadRequestException('No cars found in the database');
+    return cars;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} car`;
+  async findOne(id: string): Promise<Car> {
+    const car = await this.carRepository.findOneBy({ id });
+    if (!car) throw new BadRequestException(`Car with ID  ${id} not found`);
+    return car;
   }
 
   update(id: number, updateCarDto: UpdateCarDto) {
