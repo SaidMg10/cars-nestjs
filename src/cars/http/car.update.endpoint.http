@@ -1,0 +1,11 @@
+PATCH http://localhost:3000/cars/999eae84-e5ad-47e7-ad89-bcd8540bc722
+Content-Type: application/json
+{
+    "model": "March",
+    "price": 40000,
+    "version": "Deluxe",
+    "manufacturingYear": 2019,
+    "mileage": 30000,
+    "transmissionType": 2,
+    "description": "March de prueba para el testing"
+}
