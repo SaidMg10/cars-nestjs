@@ -61,7 +61,7 @@ export class BrandService {
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
-        'An internal error while removing the brand',
+        'An internal error while removing a brand',
       );
     }
   }
