@@ -8,6 +8,7 @@ import { envsSchema } from './config/envs-validations';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { BrandModule } from './brands/brands.module';
+import { CarTypesModule } from './car-types/car-types.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 
@@ -47,6 +48,7 @@ const ENV = process.env.NODE_ENV;
       },
     }),
     BrandModule,
+    CarTypesModule,
   ],
   controllers: [],
   providers: [],
