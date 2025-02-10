@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
-// import { UpdateBrandDto } from './dto/update-brand.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,7 +15,11 @@ export class BrandService {
   constructor(
     @InjectRepository(Brand)
     private readonly brandRepository: Repository<Brand>,
-  ) {}
+
+    private readonly logger: Logger,
+  ) {
+    this.logger = new Logger(BrandService.name);
+  }
   async create(createBrandDto: CreateBrandDto) {
     const brand = this.brandRepository.create(createBrandDto);
     return await this.brandRepository.save(brand);
@@ -24,9 +33,22 @@ export class BrandService {
     return await this.brandRepository.findOneBy({ id });
   }
 
-  //  update(id: number, updateBrandDto: UpdateBrandDto) {
-  //    return `This action updates a #${id} brand`;
-  //  }
+  async update(id: string, updateBrandDto: UpdateBrandDto) {
+    const brand = await this.brandRepository.preload({
+      id,
+      ...updateBrandDto,
+    });
+    if (!brand)
+      throw new NotFoundException(`This brand with id ${id} does not exist`);
+    try {
+      return await this.brandRepository.save(brand);
+    } catch (error) {
+      this.logger.log(error);
+      throw new InternalServerErrorException(
+        'An internal error occurred while updating the brand',
+      );
+    }
+  }
 
   remove(id: number) {
     return `This action removes a #${id} brand`;
