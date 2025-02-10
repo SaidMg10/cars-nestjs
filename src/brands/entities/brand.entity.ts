@@ -6,6 +6,7 @@ export class Brand {
   id: string;
 
   @Column({
+    name: 'name',
     type: 'varchar',
     unique: true,
     nullable: false,
