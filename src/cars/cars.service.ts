@@ -62,7 +62,7 @@ export class CarsService {
       id,
       ...updateCarDto,
     });
-    if (!car) throw new NotFoundException('The post Id does not exist');
+    if (!car) throw new NotFoundException('The car Id does not exist');
 
     try {
       return await this.carRepository.save(car);
