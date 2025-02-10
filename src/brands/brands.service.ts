@@ -30,7 +30,10 @@ export class BrandService {
   }
 
   async findOne(id: string) {
-    return await this.brandRepository.findOneBy({ id });
+    const brand = await this.brandRepository.findOneBy({ id });
+    if (!brand)
+      throw new NotFoundException(`The brand with id ${id} does not exist`);
+    return brand;
   }
 
   async update(id: string, updateBrandDto: UpdateBrandDto) {
@@ -50,7 +53,16 @@ export class BrandService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  async remove(id: string) {
+    const brand = await this.findOne(id);
+    try {
+      await this.brandRepository.remove(brand);
+      return `brand with id ${id} removed`;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        'An internal error while removing the brand',
+      );
+    }
   }
 }
