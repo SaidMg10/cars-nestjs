@@ -49,9 +49,21 @@ export class CarTypesService {
     return carType;
   }
 
-  update(id: string, updateCarTypeDto: UpdateCarTypeDto) {
-    console.log(updateCarTypeDto);
-    return `This action updates a #${id} carType`;
+  async update(id: string, updateCarTypeDto: UpdateCarTypeDto) {
+    const carType = await this.carTypeRepository.preload({
+      id,
+      ...updateCarTypeDto,
+    });
+    if (!carType)
+      throw new NotFoundException(`Car Type with id ${id} not found`);
+    try {
+      return await this.carTypeRepository.save(carType);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        'An internal error ocurred while updating a car type',
+      );
+    }
   }
 
   remove(id: string) {
