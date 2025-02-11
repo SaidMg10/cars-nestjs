@@ -5,10 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Car } from './entities/car.entity';
 import { IsSlugExistsProvider } from './providers/is-slug-exist.provider';
 import { GenerateUniqueSlugProvider } from './providers/generate-unique-slug.provider';
+import { BrandModule } from 'src/brands/brands.module';
+import { CarTypesModule } from 'src/car-types/car-types.module';
 
 @Module({
   controllers: [CarsController],
   providers: [CarsService, IsSlugExistsProvider, GenerateUniqueSlugProvider],
-  imports: [TypeOrmModule.forFeature([Car])],
+  imports: [TypeOrmModule.forFeature([Car]), BrandModule, CarTypesModule],
+  exports: [CarsService],
 })
 export class CarsModule {}
