@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -25,8 +27,11 @@ export class BrandService {
     return await this.brandRepository.save(brand);
   }
 
-  async findAll() {
-    return await this.brandRepository.find();
+  async findAll(): Promise<Brand[]> {
+    const brands = await this.brandRepository.find();
+    if (brands.length === 0)
+      throw new HttpException('No brands found', HttpStatus.NO_CONTENT);
+    return brands;
   }
 
   async findOne(id: string) {

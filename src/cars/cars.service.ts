@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -47,7 +49,7 @@ export class CarsService {
   async findAll(): Promise<Car[]> {
     const cars = await this.carRepository.find();
     if (cars.length === 0)
-      throw new NotFoundException('No cars found in the database');
+      throw new HttpException('No cars found', HttpStatus.NO_CONTENT);
     return cars;
   }
 
