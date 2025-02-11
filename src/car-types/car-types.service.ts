@@ -22,7 +22,7 @@ export class CarTypesService {
   ) {
     this.logger = new Logger(CarTypesService.name);
   }
-  async create(createCarTypeDto: CreateCarTypeDto) {
+  async create(createCarTypeDto: CreateCarTypeDto): Promise<CarType> {
     const carType = this.carTypeRepository.create(createCarTypeDto);
     try {
       return await this.carTypeRepository.save(carType);
@@ -42,14 +42,17 @@ export class CarTypesService {
     return typeCars;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<CarType> {
     const carType = await this.carTypeRepository.findOneBy({ id });
     if (!carType)
       throw new NotFoundException(`Car Type with id ${id} not found`);
     return carType;
   }
 
-  async update(id: string, updateCarTypeDto: UpdateCarTypeDto) {
+  async update(
+    id: string,
+    updateCarTypeDto: UpdateCarTypeDto,
+  ): Promise<CarType> {
     const carType = await this.carTypeRepository.preload({
       id,
       ...updateCarTypeDto,
@@ -66,7 +69,16 @@ export class CarTypesService {
     }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} carType`;
+  async remove(id: string): Promise<string> {
+    const carType = await this.findOne(id);
+    try {
+      await this.carTypeRepository.remove(carType);
+      return `the car type ${carType.name} was removed`;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        'An internal error ocurred while removing the car type',
+      );
+    }
   }
 }
