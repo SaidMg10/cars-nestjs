@@ -3,10 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { TransmissionTypes } from '../enums/transmission-types.enum';
+import { Brand } from 'src/brands/entities/brand.entity';
 
 @Entity('cars')
 export class Car {
@@ -45,7 +47,8 @@ export class Car {
 
   //TODO: Relationships
 
-  //   brand: string;
+  @OneToMany(() => Brand, (brand) => brand.car)
+  brand: Brand;
   //   carType: string;
   //   Images: string[];
 
