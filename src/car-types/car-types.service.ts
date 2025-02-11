@@ -1,7 +1,10 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateCarTypeDto } from './dto/create-car-type.dto';
 import { UpdateCarTypeDto } from './dto/update-car-type.dto';
@@ -31,20 +34,27 @@ export class CarTypesService {
     }
   }
 
-  findAll() {
-    return `This action returns all carTypes`;
+  async findAll(): Promise<CarType[]> {
+    const typeCars = await this.carTypeRepository.find();
+    if (typeCars.length === 0) {
+      throw new HttpException('No car types available', HttpStatus.NO_CONTENT);
+    }
+    return typeCars;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carType`;
+  async findOne(id: string) {
+    const carType = await this.carTypeRepository.findOneBy({ id });
+    if (!carType)
+      throw new NotFoundException(`Car Type with id ${id} not found`);
+    return carType;
   }
 
-  update(id: number, updateCarTypeDto: UpdateCarTypeDto) {
+  update(id: string, updateCarTypeDto: UpdateCarTypeDto) {
     console.log(updateCarTypeDto);
     return `This action updates a #${id} carType`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} carType`;
   }
 }
