@@ -11,7 +11,8 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Car } from './entities/car.entity';
-import { GenerateUniqueSlugProvider } from './providers/generate-unique-slug.provider';
+import { CreateCarProvider } from './providers/create-car.provider';
+import { UpdateCarProvider } from './providers/update-car.provider';
 
 @Injectable()
 export class CarsService {
@@ -19,31 +20,16 @@ export class CarsService {
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
 
-    private readonly generateUniqueSlugProvider: GenerateUniqueSlugProvider,
+    private readonly createCarProvider: CreateCarProvider,
+
+    private readonly updateCarProvider: UpdateCarProvider,
 
     private readonly logger: Logger,
   ) {
     this.logger = new Logger(CarsService.name);
   }
   async create(createCarDto: CreateCarDto): Promise<Car> {
-    //TODO:Agregar las respectivas relaciones
-    const { model, version } = createCarDto;
-
-    const car = this.carRepository.create({
-      ...createCarDto,
-      slug: await this.generateUniqueSlugProvider.generateUniqueSlug(
-        model,
-        version,
-      ),
-    });
-    try {
-      return await this.carRepository.save(car);
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'An internal error occurred while saving the car',
-      );
-    }
+    return await this.createCarProvider.create(createCarDto);
   }
 
   async findAll(): Promise<Car[]> {
@@ -60,23 +46,10 @@ export class CarsService {
   }
 
   async update(id: string, updateCarDto: UpdateCarDto): Promise<Car> {
-    const car = await this.carRepository.preload({
-      id,
-      ...updateCarDto,
-    });
-    if (!car) throw new NotFoundException('The car Id does not exist');
-
-    try {
-      return await this.carRepository.save(car);
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'An internal error occurred while saving the car',
-      );
-    }
+    return await this.updateCarProvider.update(id, updateCarDto);
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<string> {
     const car = await this.findOne(id);
     try {
       await this.carRepository.remove(car);

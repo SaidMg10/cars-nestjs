@@ -1,5 +1,5 @@
 import { Car } from 'src/cars/entities/car.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('brands')
 export class Brand {
@@ -15,7 +15,7 @@ export class Brand {
   })
   name: string;
 
-  @ManyToOne(() => Car, (car) => car.brand, { eager: true })
-  car: Car;
+  @OneToMany(() => Car, (car) => car.brand)
+  car: Car[];
   //TODO:Add relations with images
 }

@@ -3,6 +3,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -70,4 +71,8 @@ export class CreateCarDto {
     message: 'Description is too long.',
   })
   description: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  brand: string;
 }

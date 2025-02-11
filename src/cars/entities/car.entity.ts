@@ -1,9 +1,10 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -47,18 +48,20 @@ export class Car {
 
   //TODO: Relationships
 
-  @OneToMany(() => Brand, (brand) => brand.car)
+  @ManyToOne(() => Brand, (brand) => brand.car, { eager: true })
   brand: Brand;
   //   carType: string;
   //   Images: string[];
 
   //TODO: BeforeInsert && BeforeUpdate
-
   @BeforeInsert()
-  checkSlugInsert() {
-    this.slug = this.slug
-      .toLowerCase()
-      .replaceAll(' ', '_')
-      .replaceAll("'", '');
+  @BeforeUpdate()
+  checkSlug() {
+    if (this.slug) {
+      this.slug = this.slug
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll("'", '');
+    }
   }
 }
