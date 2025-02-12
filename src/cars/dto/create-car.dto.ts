@@ -75,4 +75,8 @@ export class CreateCarDto {
   @IsUUID()
   @IsNotEmpty()
   brand: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  carType: string;
 }

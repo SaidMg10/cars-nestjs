@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { TransmissionTypes } from '../enums/transmission-types.enum';
 import { Brand } from 'src/brands/entities/brand.entity';
+import { CarType } from 'src/car-types/entities/car-type.entity';
 
 @Entity('cars')
 export class Car {
@@ -50,7 +51,9 @@ export class Car {
 
   @ManyToOne(() => Brand, (brand) => brand.car, { eager: true })
   brand: Brand;
-  //   carType: string;
+
+  @ManyToOne(() => CarType, (carType) => carType.car, { eager: true })
+  carType: CarType;
   //   Images: string[];
 
   //TODO: BeforeInsert && BeforeUpdate

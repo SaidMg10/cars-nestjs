@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { BrandService } from 'src/brands/brands.service';
 import { CreateCarDto } from 'src/cars/dto/create-car.dto';
 import { GenerateUniqueSlugProvider } from './generate-unique-slug.provider';
+import { CarTypesService } from 'src/car-types/car-types.service';
 
 @Injectable()
 export class CreateCarProvider {
@@ -21,6 +22,8 @@ export class CreateCarProvider {
     private readonly brandService: BrandService,
 
     private readonly generateUniqueSlugProvider: GenerateUniqueSlugProvider,
+
+    private readonly carTypeService: CarTypesService,
   ) {
     this.logger = new Logger(CreateCarProvider.name);
   }
@@ -28,6 +31,7 @@ export class CreateCarProvider {
   async create(createCarDto: CreateCarDto): Promise<Car> {
     //TODO:Agregar las respectivas relaciones
     const brand = await this.brandService.findOne(createCarDto.brand);
+    const carType = await this.carTypeService.findOne(createCarDto.carType);
     const { model, version } = createCarDto;
 
     const car = this.carRepository.create({
@@ -37,6 +41,7 @@ export class CreateCarProvider {
         version,
       ),
       brand,
+      carType,
     });
     try {
       return await this.carRepository.save(car);

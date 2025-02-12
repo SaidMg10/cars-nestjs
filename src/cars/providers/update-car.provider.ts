@@ -4,6 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Car } from '../entities/car.entity';
 import { BrandService } from 'src/brands/brands.service';
 import { UpdateCarDto } from '../dto/update-car.dto';
+import { CarTypesService } from 'src/car-types/car-types.service';
 
 @Injectable()
 export class UpdateCarProvider {
@@ -15,12 +16,14 @@ export class UpdateCarProvider {
 
     private readonly brandService: BrandService,
 
+    private readonly carTypeService: CarTypesService,
+
     private readonly dataSource: DataSource,
   ) {
     this.logger = new Logger(UpdateCarProvider.name);
   }
   async update(id: string, updateCarDto: UpdateCarDto): Promise<Car> {
-    const { brand, ...toUpdate } = updateCarDto;
+    const { brand, carType, ...toUpdate } = updateCarDto;
 
     const car = await this.carRepository.preload({
       id,
@@ -36,6 +39,10 @@ export class UpdateCarProvider {
       if (brand) {
         const brandExist = await this.brandService.findOne(brand);
         car.brand = brandExist;
+      }
+      if (carType) {
+        const carTypeExist = await this.carTypeService.findOne(carType);
+        car.carType = carTypeExist;
       }
       await queryRunner.manager.save(car);
       await queryRunner.commitTransaction();
