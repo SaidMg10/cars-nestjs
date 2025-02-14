@@ -21,5 +21,6 @@ import { v4 as uuidv4 } from 'uuid';
   ],
   providers: [FilesService],
   controllers: [FilesController],
+  exports: [FilesService, MulterModule],
 })
 export class FilesModule {}
