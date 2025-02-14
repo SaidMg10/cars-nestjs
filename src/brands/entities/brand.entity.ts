@@ -1,5 +1,12 @@
 import { Car } from 'src/cars/entities/car.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { BrandImage } from './brand-image.entities';
 
 @Entity('brands')
 export class Brand {
@@ -17,5 +24,11 @@ export class Brand {
 
   @OneToMany(() => Car, (car) => car.brand)
   car: Car[];
+
   //TODO:Add relations with images
+  @OneToOne(() => BrandImage, (brandImage) => brandImage.brand, {
+    cascade: true,
+    eager: true,
+  })
+  brandImage: BrandImage;
 }

@@ -11,6 +11,7 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateBrandProvider } from './providers/create-brand.provider';
 
 @Injectable()
 export class BrandService {
@@ -19,12 +20,13 @@ export class BrandService {
     private readonly brandRepository: Repository<Brand>,
 
     private readonly logger: Logger,
+
+    private readonly createBrandProvider: CreateBrandProvider,
   ) {
     this.logger = new Logger(BrandService.name);
   }
-  async create(createBrandDto: CreateBrandDto) {
-    const brand = this.brandRepository.create(createBrandDto);
-    return await this.brandRepository.save(brand);
+  async create(createBrandDto: CreateBrandDto, file: Express.Multer.File) {
+    return await this.createBrandProvider.create(createBrandDto, file);
   }
 
   async findAll(): Promise<Brand[]> {

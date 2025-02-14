@@ -6,6 +6,9 @@
 # Databases
 /postgres
 
+# Uploads
+/uploads
+
 # Logs
 logs
 *.log
