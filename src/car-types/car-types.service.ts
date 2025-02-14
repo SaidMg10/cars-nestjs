@@ -11,6 +11,7 @@ import { UpdateCarTypeDto } from './dto/update-car-type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CarType } from './entities/car-type.entity';
 import { Repository } from 'typeorm';
+import { CreateCarTypeProvider } from './providers/create-car-type.provider';
 
 @Injectable()
 export class CarTypesService {
@@ -18,20 +19,17 @@ export class CarTypesService {
     @InjectRepository(CarType)
     private readonly carTypeRepository: Repository<CarType>,
 
+    private readonly createCarTypeProvider: CreateCarTypeProvider,
+
     private readonly logger: Logger,
   ) {
     this.logger = new Logger(CarTypesService.name);
   }
-  async create(createCarTypeDto: CreateCarTypeDto): Promise<CarType> {
-    const carType = this.carTypeRepository.create(createCarTypeDto);
-    try {
-      return await this.carTypeRepository.save(carType);
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'An internal error while saving the car type',
-      );
-    }
+  async create(
+    createCarTypeDto: CreateCarTypeDto,
+    file: Express.Multer.File,
+  ): Promise<CarType> {
+    return await this.createCarTypeProvider.create(createCarTypeDto, file);
   }
 
   async findAll(): Promise<CarType[]> {

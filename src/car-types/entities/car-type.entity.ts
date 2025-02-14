@@ -1,5 +1,12 @@
 import { Car } from 'src/cars/entities/car.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CarTypeImage } from './car-type-image.entity';
 
 @Entity('car_types')
 export class CarType {
@@ -16,5 +23,12 @@ export class CarType {
 
   @OneToMany(() => Car, (car) => car.carType)
   car: Car[];
-  //TODO: Relations with images
+
+  //TODO: Relationship Images CarType
+
+  @OneToOne(() => CarTypeImage, (carTypeImage) => carTypeImage.carType, {
+    eager: true,
+    cascade: true,
+  })
+  carTypeImage: CarTypeImage;
 }

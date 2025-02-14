@@ -36,10 +36,8 @@ export class CreateBrandProvider {
     let path: string | null = null;
 
     try {
-      console.log('Received file:', file);
       const uploadImage = await this.filesService.uploadImage(file);
       path = uploadImage.filePath;
-      console.log('Upload result:', uploadImage);
 
       const brandImage = this.brandImageRepository.create({ path });
 
