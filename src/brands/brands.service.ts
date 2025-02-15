@@ -1,9 +1,9 @@
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
-  InternalServerErrorException,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -11,8 +11,11 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBrandProvider } from './providers/create-brand.provider';
-import { UpdateBrandProvider } from './providers/update-brand.provider';
+import {
+  CreateBrandProvider,
+  DeleteBrandProvider,
+  UpdateBrandProvider,
+} from './providers';
 
 @Injectable()
 export class BrandService {
@@ -20,14 +23,13 @@ export class BrandService {
     @InjectRepository(Brand)
     private readonly brandRepository: Repository<Brand>,
 
-    private readonly logger: Logger,
-
     private readonly createBrandProvider: CreateBrandProvider,
 
     private readonly updateBrandProvider: UpdateBrandProvider,
-  ) {
-    this.logger = new Logger(BrandService.name);
-  }
+
+    @Inject(forwardRef(() => DeleteBrandProvider))
+    private readonly deleteBrandProvider: DeleteBrandProvider,
+  ) {}
   async create(createBrandDto: CreateBrandDto, file: Express.Multer.File) {
     return await this.createBrandProvider.create(createBrandDto, file);
   }
@@ -55,15 +57,6 @@ export class BrandService {
   }
 
   async remove(id: string) {
-    const brand = await this.findOne(id);
-    try {
-      await this.brandRepository.remove(brand);
-      return `brand with id ${id} removed`;
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'An internal error while removing a brand',
-      );
-    }
+    return await this.deleteBrandProvider.remove(id);
   }
 }
