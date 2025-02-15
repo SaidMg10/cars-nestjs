@@ -35,6 +35,7 @@ export class CreateCarTypeProvider {
     if (!file) throw new BadRequestException('Car type image is required');
 
     const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
     await queryRunner.startTransaction();
 
     let path: string | null = null;

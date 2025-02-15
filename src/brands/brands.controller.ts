@@ -38,8 +38,13 @@ export class BrandController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
-    return this.brandService.update(id, updateBrandDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updateBrandDto: UpdateBrandDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.brandService.update(id, updateBrandDto, file);
   }
 
   @Delete(':id')

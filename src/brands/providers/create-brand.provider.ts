@@ -31,6 +31,7 @@ export class CreateBrandProvider {
     if (!file) throw new BadRequestException('Brand image is required');
 
     const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
     await queryRunner.startTransaction();
 
     let path: string | null = null;

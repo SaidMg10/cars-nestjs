@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { Brand } from './entities/brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBrandProvider } from './providers/create-brand.provider';
+import { UpdateBrandProvider } from './providers/update-brand.provider';
 
 @Injectable()
 export class BrandService {
@@ -22,6 +23,8 @@ export class BrandService {
     private readonly logger: Logger,
 
     private readonly createBrandProvider: CreateBrandProvider,
+
+    private readonly updateBrandProvider: UpdateBrandProvider,
   ) {
     this.logger = new Logger(BrandService.name);
   }
@@ -43,21 +46,12 @@ export class BrandService {
     return brand;
   }
 
-  async update(id: string, updateBrandDto: UpdateBrandDto) {
-    const brand = await this.brandRepository.preload({
-      id,
-      ...updateBrandDto,
-    });
-    if (!brand)
-      throw new NotFoundException(`This brand with id ${id} does not exist`);
-    try {
-      return await this.brandRepository.save(brand);
-    } catch (error) {
-      this.logger.log(error);
-      throw new InternalServerErrorException(
-        'An internal error occurred while updating the brand',
-      );
-    }
+  async update(
+    id: string,
+    updateBrandDto: UpdateBrandDto,
+    file?: Express.Multer.File,
+  ) {
+    return await this.updateBrandProvider.update(id, updateBrandDto, file);
   }
 
   async remove(id: string) {
