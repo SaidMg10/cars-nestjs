@@ -7,10 +7,16 @@ import { CarTypeImage } from './entities/car-type-image.entity';
 import { FilesModule } from 'src/files/files.module';
 import { CreateCarTypeProvider } from './providers/create-car-type.provider';
 import { UpdateCarTypeProvider } from './providers/update-car-type.provider';
+import { DeleteCarTypeProvider } from './providers/delete-car-type.provider';
 
 @Module({
   controllers: [CarTypesController],
-  providers: [CarTypesService, CreateCarTypeProvider, UpdateCarTypeProvider],
+  providers: [
+    CarTypesService,
+    CreateCarTypeProvider,
+    UpdateCarTypeProvider,
+    DeleteCarTypeProvider,
+  ],
   imports: [TypeOrmModule.forFeature([CarType, CarTypeImage]), FilesModule],
   exports: [CarTypesService],
 })

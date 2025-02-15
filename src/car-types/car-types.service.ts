@@ -2,8 +2,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCarTypeDto } from './dto/create-car-type.dto';
@@ -11,8 +9,11 @@ import { UpdateCarTypeDto } from './dto/update-car-type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CarType } from './entities/car-type.entity';
 import { Repository } from 'typeorm';
-import { CreateCarTypeProvider } from './providers/create-car-type.provider';
-import { UpdateCarTypeProvider } from './providers/update-car-type.provider';
+import {
+  CreateCarTypeProvider,
+  DeleteCarTypeProvider,
+  UpdateCarTypeProvider,
+} from './providers';
 
 @Injectable()
 export class CarTypesService {
@@ -24,10 +25,8 @@ export class CarTypesService {
 
     private readonly updateCarTypeProvider: UpdateCarTypeProvider,
 
-    private readonly logger: Logger,
-  ) {
-    this.logger = new Logger(CarTypesService.name);
-  }
+    private readonly deleteCarTypeProvider: DeleteCarTypeProvider,
+  ) {}
   async create(
     createCarTypeDto: CreateCarTypeDto,
     file: Express.Multer.File,
@@ -59,15 +58,6 @@ export class CarTypesService {
   }
 
   async remove(id: string): Promise<string> {
-    const carType = await this.findOne(id);
-    try {
-      await this.carTypeRepository.remove(carType);
-      return `the car type ${carType.name} was removed`;
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'An internal error ocurred while removing the car type',
-      );
-    }
+    return await this.deleteCarTypeProvider.remove(id);
   }
 }
