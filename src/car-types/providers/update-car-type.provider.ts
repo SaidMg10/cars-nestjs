@@ -5,34 +5,37 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brand } from '../entities/brand.entity';
 import { DataSource, Repository } from 'typeorm';
-import { BrandImage } from '../entities/brand-image.entities';
+import { UpdateCarTypeDto } from '../dto/update-car-type.dto';
+import { CarTypeImage } from '../entities/car-type-image.entity';
 import { FilesService } from 'src/files/files.service';
-import { UpdateBrandDto } from '../dto/update-brand.dto';
+import { CarType } from '../entities/car-type.entity';
 
 @Injectable()
-export class UpdateBrandProvider {
+export class UpdateCarTypeProvider {
   constructor(
-    @InjectRepository(Brand)
-    private readonly brandRepository: Repository<Brand>,
+    @InjectRepository(CarType)
+    private readonly carTypeRepository: Repository<CarType>,
 
     private readonly logger: Logger,
 
-    private readonly filesService: FilesService,
-
     private readonly dataSource: DataSource,
+
+    private readonly filesService: FilesService,
   ) {
-    this.logger = new Logger(UpdateBrandProvider.name);
+    this.logger = new Logger(UpdateCarTypeProvider.name);
   }
 
   async update(
     id: string,
-    updateBrandDto: UpdateBrandDto,
+    updateCarTypeDto: UpdateCarTypeDto,
     file?: Express.Multer.File,
   ) {
-    const brand = await this.brandRepository.preload({ id, ...updateBrandDto });
-    if (!brand) throw new NotFoundException(`Brand with id: ${id} not found`);
+    const carType = await this.carTypeRepository.preload({
+      id,
+      ...updateCarTypeDto,
+    });
+    if (!carType) throw new NotFoundException(`Car Type id ${id} not found`);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -42,10 +45,12 @@ export class UpdateBrandProvider {
 
     try {
       if (file) {
-        const existingImage = await queryRunner.manager.findOne(BrandImage, {
-          where: { brand: { id } },
-        });
-
+        const existingImage = await this.dataSource.manager.findOne(
+          CarTypeImage,
+          {
+            where: { carType: { id } },
+          },
+        );
         if (existingImage) {
           oldImagePath = existingImage.path;
 
@@ -56,7 +61,7 @@ export class UpdateBrandProvider {
           await queryRunner.manager.save(existingImage);
         }
       }
-      await queryRunner.manager.save(brand);
+      await queryRunner.manager.save(carType);
 
       if (oldImagePath) {
         try {
@@ -68,14 +73,13 @@ export class UpdateBrandProvider {
           );
         }
       }
-
       await queryRunner.commitTransaction();
-      return brand;
+      return carType;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.error(error);
       throw new InternalServerErrorException(
-        'An error occurred while updating the brand',
+        'An error occurred while updating the car type',
       );
     } finally {
       await queryRunner.release();

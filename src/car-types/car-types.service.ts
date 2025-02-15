@@ -12,6 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CarType } from './entities/car-type.entity';
 import { Repository } from 'typeorm';
 import { CreateCarTypeProvider } from './providers/create-car-type.provider';
+import { UpdateCarTypeProvider } from './providers/update-car-type.provider';
 
 @Injectable()
 export class CarTypesService {
@@ -20,6 +21,8 @@ export class CarTypesService {
     private readonly carTypeRepository: Repository<CarType>,
 
     private readonly createCarTypeProvider: CreateCarTypeProvider,
+
+    private readonly updateCarTypeProvider: UpdateCarTypeProvider,
 
     private readonly logger: Logger,
   ) {
@@ -50,21 +53,9 @@ export class CarTypesService {
   async update(
     id: string,
     updateCarTypeDto: UpdateCarTypeDto,
+    file?: Express.Multer.File,
   ): Promise<CarType> {
-    const carType = await this.carTypeRepository.preload({
-      id,
-      ...updateCarTypeDto,
-    });
-    if (!carType)
-      throw new NotFoundException(`Car Type with id ${id} not found`);
-    try {
-      return await this.carTypeRepository.save(carType);
-    } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException(
-        'An internal error ocurred while updating a car type',
-      );
-    }
+    return await this.updateCarTypeProvider.update(id, updateCarTypeDto, file);
   }
 
   async remove(id: string): Promise<string> {

@@ -38,8 +38,13 @@ export class CarTypesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarTypeDto: UpdateCarTypeDto) {
-    return this.carTypesService.update(id, updateCarTypeDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updateCarTypeDto: UpdateCarTypeDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.carTypesService.update(id, updateCarTypeDto, file);
   }
 
   @Delete(':id')
