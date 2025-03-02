@@ -5,12 +5,14 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { TransmissionTypes } from '../enums/transmission-types.enum';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { CarType } from 'src/car-types/entities/car-type.entity';
+import { CarImage } from './car-image.entity';
 
 @Entity('cars')
 export class Car {
@@ -54,7 +56,12 @@ export class Car {
 
   @ManyToOne(() => CarType, (carType) => carType.car, { eager: true })
   carType: CarType;
-  //   Images: string[];
+
+  @OneToMany(() => CarImage, (carImage) => carImage.car, {
+    cascade: true,
+    eager: true,
+  })
+  carImages: CarImage[];
 
   //TODO: BeforeInsert && BeforeUpdate
   @BeforeInsert()
