@@ -1,7 +1,5 @@
 import {
   forwardRef,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   Logger,
@@ -12,9 +10,14 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Car } from './entities';
-import { CreateCarProvider } from './providers/create-car.provider';
-import { UpdateCarProvider } from './providers/update-car.provider';
-import { DeleteCarProvider } from './providers/delete-car.provider';
+import { GetCarsDto } from './dto/get-car.dto';
+import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import {
+  CreateCarProvider,
+  DeleteCarProvider,
+  GetAllCarsProvider,
+  UpdateCarProvider,
+} from './providers';
 
 @Injectable()
 export class CarsService {
@@ -25,6 +28,8 @@ export class CarsService {
     private readonly createCarProvider: CreateCarProvider,
 
     private readonly updateCarProvider: UpdateCarProvider,
+
+    private readonly getAllCarsProvider: GetAllCarsProvider,
 
     @Inject(forwardRef(() => DeleteCarProvider))
     private readonly deleteCarProvider: DeleteCarProvider,
@@ -40,11 +45,8 @@ export class CarsService {
     return await this.createCarProvider.create(createCarDto, files);
   }
 
-  async findAll(): Promise<Car[]> {
-    const cars = await this.carRepository.find();
-    if (cars.length === 0)
-      throw new HttpException('No cars found', HttpStatus.NO_CONTENT);
-    return cars;
+  async findAll(filters?: GetCarsDto): Promise<Paginated<Car>> {
+    return await this.getAllCarsProvider.findAll(filters);
   }
 
   async findOne(id: string): Promise<Car> {

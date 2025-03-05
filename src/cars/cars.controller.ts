@@ -8,11 +8,14 @@ import {
   Delete,
   UploadedFiles,
   UseInterceptors,
+  ClassSerializerInterceptor,
+  Query,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { GetCarsDto } from './dto/get-car.dto';
 
 @Controller('cars')
 export class CarsController {
@@ -28,11 +31,13 @@ export class CarsController {
   }
 
   @Get()
-  findAll() {
-    return this.carsService.findAll();
+  @UseInterceptors(ClassSerializerInterceptor)
+  findAll(@Query() filters: GetCarsDto) {
+    return this.carsService.findAll(filters);
   }
 
   @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   findOne(@Param('id') id: string) {
     return this.carsService.findOne(id);
   }
